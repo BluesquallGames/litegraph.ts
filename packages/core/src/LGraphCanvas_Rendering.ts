@@ -1098,7 +1098,7 @@ export default class LGraphCanvas_Rendering {
                     if (
                         this.connecting_output &&
                         out_slot &&
-                        !LiteGraph.isValidConnection(slot.type, out_slot.type)
+                        !this.graph!.isValidConnection(slot.type, out_slot.type)
                     ) {
                         ctx.globalAlpha = 0.4 * editor_alpha;
                     } else {
@@ -1205,7 +1205,7 @@ export default class LGraphCanvas_Rendering {
                     if (
                         this.connecting_input &&
                         in_slot &&
-                        !LiteGraph.isValidConnection(in_slot.type, slot_type)
+                        !this.graph!.isValidConnection(in_slot.type, slot_type)
                     ) {
                         ctx.globalAlpha = 0.4 * editor_alpha;
                     } else {

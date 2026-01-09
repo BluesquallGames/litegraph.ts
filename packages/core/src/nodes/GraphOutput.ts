@@ -139,7 +139,7 @@ export default class GraphOutput extends LGraphNode {
         if (input.type != type) {
             if (type == "action" || type == "event")
                 type = BuiltInSlotType.EVENT;
-            if (!LiteGraph.isValidConnection(input.type, type))
+            if (!this.graph!.isValidConnection(input.type, type))
                 this.disconnectInput(0);
             input.type = type;
         }

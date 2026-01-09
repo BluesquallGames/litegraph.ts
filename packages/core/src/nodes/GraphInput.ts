@@ -142,7 +142,7 @@ export default class GraphInput extends LGraphNode {
 
         //update output
         if (output.type != type) {
-            if (!LiteGraph.isValidConnection(output.type, type))
+            if (!this.graph!.isValidConnection(output.type, type))
                 this.disconnectOutput(0);
             output.type = type;
         }

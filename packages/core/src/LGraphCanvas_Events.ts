@@ -908,7 +908,7 @@ export default class LGraphCanvas_Events {
                                 if (slot != -1 && node.inputs[slot]) {
                                     let slot_type = node.inputs[slot].type;
                                     if (
-                                        LiteGraph.isValidConnection(
+                                        this.graph.isValidConnection(
                                             this.connecting_output.type,
                                             slot_type,
                                         )
@@ -941,7 +941,7 @@ export default class LGraphCanvas_Events {
                                 if (slot != -1 && node.outputs[slot]) {
                                     let slot_type = node.outputs[slot].type;
                                     if (
-                                        LiteGraph.isValidConnection(
+                                        this.graph.isValidConnection(
                                             this.connecting_input.type,
                                             slot_type,
                                         )

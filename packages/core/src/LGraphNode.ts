@@ -875,6 +875,9 @@ export default class LGraphNode {
 
     /** sets the output data */
     setOutputDataType(slot: number, type: SlotType): void {
+      if (!this.graph) {
+        return;
+      }
         if (!this.outputs) {
             return;
         }
@@ -902,7 +905,7 @@ export default class LGraphNode {
                         );
                         if (
                             inputSlot &&
-                            !LiteGraph.isValidConnection(type, inputSlot.type)
+                            !this.graph!.isValidConnection(type, inputSlot.type)
                         ) {
                             outputNode.disconnectInput(link.target_slot);
                         }
@@ -1126,7 +1129,7 @@ export default class LGraphNode {
             const inputNode = this.graph?.getNodeById(link.origin_id);
             if (inputNode) {
                 const slot = inputNode.getOutputInfo(link.origin_slot);
-                if (slot && !LiteGraph.isValidConnection(slot.type, type))
+                if (slot && !this.graph.isValidConnection(slot.type, type))
                     inputNode.disconnectOutput(link.origin_slot);
             }
         }

@@ -97,6 +97,10 @@ export type LGraphNodeExecutable = LGraphNode & {
     onExecute: NonNullable<LGraphNode["onExecute"]>;
 };
 
+export interface TypeSystem {
+  isCompatible(a: SlotType, b: SlotType): boolean;
+}
+
 export default class LGraph {
     static DEFAULT_SUPPORTED_TYPES: string[] = ["number", "string", "boolean"];
     static last_graph_id: number = 0;
@@ -140,7 +144,9 @@ export default class LGraph {
         configure: (data: SerializedLGraph) => void;
     }>();
 
-    constructor(o?: SerializedLGraph) {
+    constructor(o?: SerializedLGraph, opts?: {
+      typeSystem?: TypeSystem;
+    }) {
         if (LiteGraph.debug) {
             console.log("Graph created");
         }
@@ -150,6 +156,7 @@ export default class LGraph {
         if (o) {
             this.configure(o);
         }
+        this._typeSystem = opts?.typeSystem || defaultTypeSystem;
     }
 
     id: GraphID = LiteGraph.use_uuids ? uuidv4() : ++LGraph.last_graph_id;
@@ -2028,4 +2035,16 @@ export default class LGraph {
             console.error("Error loading graph:", err);
         };
     }
+
+    isValidConnection(a: SlotType, b: SlotType) {
+      return this._typeSystem.isCompatible(a, b);
+    }
+
+    private _typeSystem: TypeSystem
 }
+
+const defaultTypeSystem: TypeSystem = {
+  isCompatible(a, b) {
+    return LiteGraph.isValidConnection(a, b);
+  },
+};

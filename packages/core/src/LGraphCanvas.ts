@@ -1975,7 +1975,7 @@ export default class LGraphCanvas
                 node.inputs.length &&
                 node.outputs &&
                 node.outputs.length &&
-                LiteGraph.isValidConnection(
+                this.graph!.isValidConnection(
                     node.inputs[0].type,
                     node.outputs[0].type,
                 ) &&
