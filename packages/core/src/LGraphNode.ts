@@ -246,7 +246,31 @@ export default class LGraphNode {
     type: string;
     category: null | string;
     size: Vector2;
-    pos: Vector2 = [0, 0];
+
+    get pos() {
+        return this._position as Readonly<Vector2>;
+    }
+
+    set pos(value) {
+        this._updatePosition(value[0], value[1]);
+    }
+
+    get positionX() {
+      return this._position[0];
+    }
+
+    set positionX(value) {
+      this._updatePosition(value, this._position[1]);
+    }
+
+    get positionY() {
+      return this._position[1];
+    }
+
+    set positionY(value) {
+      this._updatePosition(this._position[0], value);
+    }
+
     graph?: null | LGraph;
     graph_version: number;
 
@@ -637,6 +661,10 @@ export default class LGraphNode {
     /** serialize and stringify */
     toString(): string {
         return JSON.stringify(this.serialize());
+    }
+
+    translate(offset: Vector2) {
+        this._updatePosition([this._position[0] + offset[0], this._position[1] + offset[1]]);
     }
 
     /** get the title string */
@@ -2139,8 +2167,8 @@ export default class LGraphNode {
      */
     getBounding(out?: Float32Array): Float32Array {
         out = out || new Float32Array(4);
-        out[0] = this.pos[0] - 4;
-        out[1] = this.pos[1] - LiteGraph.NODE_TITLE_HEIGHT;
+        out[0] = this._position[0] - 4;
+        out[1] = this._position[1] - LiteGraph.NODE_TITLE_HEIGHT;
         out[2] = this.size[0] + 4;
         out[3] = this.flags.collapsed
             ? LiteGraph.NODE_TITLE_HEIGHT
@@ -2167,13 +2195,13 @@ export default class LGraphNode {
             margin_top = 0;
         }
         if (this.flags && this.flags.collapsed) {
-            //if ( distance([x,y], [this.pos[0] + this.size[0]*0.5, this.pos[1] + this.size[1]*0.5]) < LiteGraph.NODE_COLLAPSED_RADIUS)
+            //if ( distance([x,y], [this._position[0] + this.size[0]*0.5, this._position[1] + this.size[1]*0.5]) < LiteGraph.NODE_COLLAPSED_RADIUS)
             if (
                 LiteGraph.isInsideRectangle(
                     x,
                     y,
-                    this.pos[0] - margin,
-                    this.pos[1] - LiteGraph.NODE_TITLE_HEIGHT - margin,
+                    this._position[0] - margin,
+                    this._position[1] - LiteGraph.NODE_TITLE_HEIGHT - margin,
                     (this._collapsed_width || LiteGraph.NODE_COLLAPSED_WIDTH) +
                         2 * margin,
                     LiteGraph.NODE_TITLE_HEIGHT + 2 * margin,
@@ -2182,10 +2210,10 @@ export default class LGraphNode {
                 return true;
             }
         } else if (
-            this.pos[0] - 4 - margin < x &&
-            this.pos[0] + this.size[0] + 4 + margin > x &&
-            this.pos[1] - margin_top - margin < y &&
-            this.pos[1] + this.size[1] + margin > y
+            this._position[0] - 4 - margin < x &&
+            this._position[0] + this.size[0] + 4 + margin > x &&
+            this._position[1] - margin_top - margin < y &&
+            this._position[1] + this.size[1] + margin > y
         ) {
             return true;
         }
@@ -3319,65 +3347,65 @@ export default class LGraphNode {
         if (this.flags.collapsed && !ignore_collapsed) {
             let w = this._collapsed_width || LiteGraph.NODE_COLLAPSED_WIDTH;
             if (this.horizontal) {
-                out[0] = this.pos[0] + w * 0.5;
+                out[0] = this._position[0] + w * 0.5;
                 if (is_input) {
-                    out[1] = this.pos[1] - LiteGraph.NODE_TITLE_HEIGHT;
+                    out[1] = this.positionY - LiteGraph.NODE_TITLE_HEIGHT;
                 } else {
-                    out[1] = this.pos[1];
+                    out[1] = this.positionY;
                 }
             } else {
                 if (is_input) {
-                    out[0] = this.pos[0];
+                    out[0] = this._position[0];
                 } else {
-                    out[0] = this.pos[0] + w;
+                    out[0] = this._position[0] + w;
                 }
-                out[1] = this.pos[1] - LiteGraph.NODE_TITLE_HEIGHT * 0.5;
+                out[1] = this._position[1] - LiteGraph.NODE_TITLE_HEIGHT * 0.5;
             }
             return out;
         }
 
         //weird feature that never got finished
         if (is_input && slotNumber == -1) {
-            out[0] = this.pos[0] + LiteGraph.NODE_TITLE_HEIGHT * 0.5;
-            out[1] = this.pos[1] + LiteGraph.NODE_TITLE_HEIGHT * 0.5;
+            out[0] = this._position[0] + LiteGraph.NODE_TITLE_HEIGHT * 0.5;
+            out[1] = this._position[1] + LiteGraph.NODE_TITLE_HEIGHT * 0.5;
             return out;
         }
 
         //hard-coded pos
         if (is_input && num_slots > slotNumber && this.inputs[slotNumber].pos) {
-            out[0] = this.pos[0] + this.inputs[slotNumber].pos[0];
-            out[1] = this.pos[1] + this.inputs[slotNumber].pos[1];
+            out[0] = this._position[0] + this.inputs[slotNumber].pos[0];
+            out[1] = this._position[1] + this.inputs[slotNumber].pos[1];
             return out;
         } else if (
             !is_input &&
             num_slots > slotNumber &&
             this.outputs[slotNumber].pos
         ) {
-            out[0] = this.pos[0] + this.outputs[slotNumber].pos[0];
-            out[1] = this.pos[1] + this.outputs[slotNumber].pos[1];
+            out[0] = this._position[0] + this.outputs[slotNumber].pos[0];
+            out[1] = this._position[1] + this.outputs[slotNumber].pos[1];
             return out;
         }
 
         //horizontal distributed slots
         if (this.horizontal) {
             out[0] =
-                this.pos[0] + (slotNumber + 0.5) * (this.size[0] / num_slots);
+                this._position[0] + (slotNumber + 0.5) * (this.size[0] / num_slots);
             if (is_input) {
-                out[1] = this.pos[1] - LiteGraph.NODE_TITLE_HEIGHT;
+                out[1] = this._position[1] - LiteGraph.NODE_TITLE_HEIGHT;
             } else {
-                out[1] = this.pos[1] + this.size[1];
+                out[1] = this._position[1] + this.size[1];
             }
             return out;
         }
 
         //default vertical slots
         if (is_input) {
-            out[0] = this.pos[0] + offset;
+            out[0] = this._position[0] + offset;
         } else {
-            out[0] = this.pos[0] + this.size[0] + 1 - offset;
+            out[0] = this._position[0] + this.size[0] + 1 - offset;
         }
         out[1] =
-            this.pos[1] +
+            this._position[1] +
             (slotNumber + 0.7) * LiteGraph.NODE_SLOT_HEIGHT +
             ((this.constructor as any).slot_start_y || 0);
         return out;
@@ -3385,12 +3413,10 @@ export default class LGraphNode {
 
     /** Force align to grid */
     alignToGrid(): void {
-        this.pos[0] =
-            LiteGraph.CANVAS_GRID_SIZE *
-            Math.round(this.pos[0] / LiteGraph.CANVAS_GRID_SIZE);
-        this.pos[1] =
-            LiteGraph.CANVAS_GRID_SIZE *
-            Math.round(this.pos[1] / LiteGraph.CANVAS_GRID_SIZE);
+        this._updatePosition(
+          LiteGraph.CANVAS_GRID_SIZE * Math.round(this._position[0] / LiteGraph.CANVAS_GRID_SIZE),
+            LiteGraph.CANVAS_GRID_SIZE * Math.round(this._position[1] / LiteGraph.CANVAS_GRID_SIZE)
+        );
     }
 
     private console: string[] = [];
@@ -3490,8 +3516,8 @@ export default class LGraphNode {
 
     localToScreen(x: number, y: number, graphCanvas: LGraphCanvas): Vector2 {
         return [
-            (x + this.pos[0]) * graphCanvas.ds.scale + graphCanvas.ds.offset[0],
-            (y + this.pos[1]) * graphCanvas.ds.scale + graphCanvas.ds.offset[1],
+            (x + this._position[0]) * graphCanvas.ds.scale + graphCanvas.ds.offset[0],
+            (y + this._position[1]) * graphCanvas.ds.scale + graphCanvas.ds.offset[1],
         ];
     }
 
@@ -3752,6 +3778,11 @@ export default class LGraphNode {
     ): void | boolean;
 
     /**
+     * Called when the node's position changes
+     */
+    onPositionChanged?(pos: Readonly<Vector2>): void;
+
+    /**
      * Called when the node's title or other JS property changes
      */
     onJSPropertyChanged?(
@@ -3824,4 +3855,12 @@ export default class LGraphNode {
         options: ContextMenuItem[],
     ): ContextMenuItem[];
     getSlotMenuOptions?(slot: SlotInPosition): ContextMenuItem[];
+
+    private readonly _position: Vector2 = [0, 0];
+
+    private _updatePosition(x: number, y: number) {
+        this._position[0] = x;
+        this._position[1] = y;
+        this.onPositionChanged?.(this._position);
+    }
 }

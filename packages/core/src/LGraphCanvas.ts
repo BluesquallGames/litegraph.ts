@@ -630,10 +630,10 @@ export default class LGraphCanvas
             let min_y = Number.MAX_SAFE_INTEGER;
             let max_y = 0;
             for (const node of graph.iterateNodesInOrder()) {
-                min_x = Math.min(node.pos[0], min_x);
-                max_x = Math.max(node.pos[0] + node.size[0], max_x);
-                min_y = Math.min(node.pos[1], min_y);
-                max_y = Math.max(node.pos[1] + node.size[1], max_y);
+                min_x = Math.min(node.positionX, min_x);
+                max_x = Math.max(node.positionX + node.size[0], max_x);
+                min_y = Math.min(node.positionY, min_y);
+                max_y = Math.max(node.positionY + node.size[1], max_y);
             }
             offset[0] = -(min_x + (max_x - min_x) / 2) + this.canvas.width / 2;
             offset[1] = -(min_y + (max_y - min_y) / 2) + this.canvas.height / 2;
@@ -1247,8 +1247,8 @@ export default class LGraphCanvas
             LiteGraph.isInsideRectangle(
                 canvasX,
                 canvasY,
-                node.pos[0] + 2,
-                node.pos[1] + 2 - title_height,
+                node.positionX + 2,
+                node.positionY + 2 - title_height,
                 title_height - 4,
                 title_height - 4,
             )
@@ -1611,8 +1611,10 @@ export default class LGraphCanvas
                 node.configure(node_data);
 
                 //paste in last known mouse position
-                node.pos[0] += this.graph_mouse[0] - posMin[0]; //+= 5;
-                node.pos[1] += this.graph_mouse[1] - posMin[1]; //+= 5;
+                node.pos = [
+                  node.positionX + this.graph_mouse[0] - posMin[0],  //+= 5,
+                  node.positionY + this.graph_mouse[1] - posMin[1],  //+= 5,
+                ];
 
                 const { cloneData, prevNodeID } =
                     clipboard_info.nodeCloneData[node.id];
@@ -1678,7 +1680,7 @@ export default class LGraphCanvas
                 return;
             }
             oldIDToNewNode[prevID] = newnode;
-            newnode.pos = [node.pos[0] + 5, node.pos[1] + 5];
+            newnode.pos = [node.positionX + 5, node.positionY + 5];
             node.graph?.add(newnode, {
                 addedBy: "cloneSelection",
                 prevNodeID: prevID,
@@ -2008,11 +2010,11 @@ export default class LGraphCanvas
     /** centers the camera on a given node */
     centerOnNode(node: LGraphNode): void {
         this.ds.offset[0] =
-            -node.pos[0] -
+            -node.positionX -
             node.size[0] * 0.5 +
             (this.canvas.width * 0.5) / this.ds.scale;
         this.ds.offset[1] =
-            -node.pos[1] -
+            -node.positionY -
             node.size[1] * 0.5 +
             (this.canvas.height * 0.5) / this.ds.scale;
         this.setDirty(true, true);
@@ -2066,8 +2068,8 @@ export default class LGraphCanvas
             return null;
         }
 
-        let x = pos[0] - node.pos[0];
-        let y = pos[1] - node.pos[1];
+        let x = pos[0] - node.positionX;
+        let y = pos[1] - node.positionY;
         let width = node.size[0];
         let ref_window = this.getCanvasWindow();
 

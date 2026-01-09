@@ -130,8 +130,10 @@ export default class LGraphCanvas_Events {
             ) {
                 let cloned = node.clone();
                 if (cloned) {
-                    cloned.pos[0] += 5;
-                    cloned.pos[1] += 5;
+                    cloned.pos = [
+                        cloned.positionX + 5,
+                        cloned.positionY + 5,
+                    ];
                     this.graph.add(cloned, { doCalcSize: false });
                     node = cloned;
                     skip_action = true;
@@ -174,8 +176,8 @@ export default class LGraphCanvas_Events {
                         LiteGraph.isInsideRectangle(
                             e.canvasX,
                             e.canvasY,
-                            node.pos[0] + node.size[0] - 15,
-                            node.pos[1] + node.size[1] - 15,
+                            node.positionX + node.size[0] - 15,
+                            node.positionY + node.size[1] - 15,
                             20,
                             20,
                         )
@@ -336,8 +338,8 @@ export default class LGraphCanvas_Events {
                         block_drag_node = true;
                     }
                     let pos: Vector2 = [
-                        e.canvasX - node.pos[0],
-                        e.canvasY - node.pos[1],
+                        e.canvasX - node.positionX,
+                        e.canvasY - node.positionY,
                     ];
 
                     //widgets
@@ -411,8 +413,8 @@ export default class LGraphCanvas_Events {
                     let clickedSubgraphButton = false;
                     if (node && node.subgraph && !node.skip_subgraph_button) {
                         let pos: Vector2 = [
-                            e.canvasX - node.pos[0],
-                            e.canvasY - node.pos[1],
+                            e.canvasX - node.positionX,
+                            e.canvasY - node.positionY,
                         ];
                         if (
                             !node.flags.collapsed &&
@@ -457,9 +459,9 @@ export default class LGraphCanvas_Events {
                             let dist = LiteGraph.distance(
                                 [e.canvasX, e.canvasY],
                                 [
-                                    this.selected_group.pos[0] +
+                                    this.selected_group.positionX +
                                         this.selected_group.size[0],
-                                    this.selected_group.pos[1] +
+                                    this.selected_group.positionY +
                                         this.selected_group.size[1],
                                 ],
                             );
@@ -655,8 +657,8 @@ export default class LGraphCanvas_Events {
                 LiteGraph.isInsideRectangle(
                     e.canvasX,
                     e.canvasY,
-                    this.selected_group.pos[0],
-                    this.selected_group.pos[1],
+                    this.selected_group.positionX,
+                    this.selected_group.positionY,
                     this.selected_group.size[0],
                     height,
                 )
@@ -771,8 +773,8 @@ export default class LGraphCanvas_Events {
             //moving/resizing a group
             if (this.selected_group_resizing) {
                 this.selected_group.size = [
-                    e.canvasX - this.selected_group.pos[0],
-                    e.canvasY - this.selected_group.pos[1],
+                    e.canvasX - this.selected_group.positionX,
+                    e.canvasY - this.selected_group.positionY,
                 ];
             } else {
                 let deltax = delta[0] / this.ds.scale;
@@ -813,8 +815,8 @@ export default class LGraphCanvas_Events {
                             this.node_over.onMouseLeave(
                                 e,
                                 [
-                                    e.canvasX - this.node_over.pos[0],
-                                    e.canvasY - this.node_over.pos[1],
+                                    e.canvasX - this.node_over.positionX,
+                                    e.canvasY - this.node_over.positionY,
                                 ],
                                 this,
                             );
@@ -866,8 +868,8 @@ export default class LGraphCanvas_Events {
                             node.onMouseEnter(
                                 e,
                                 [
-                                    e.canvasX - node.pos[0],
-                                    e.canvasY - node.pos[1],
+                                    e.canvasX - node.positionX,
+                                    e.canvasY - node.positionY,
                                 ],
                                 this,
                             );
@@ -879,7 +881,7 @@ export default class LGraphCanvas_Events {
                     if (node.onMouseMove) {
                         node.onMouseMove(
                             e,
-                            [e.canvasX - node.pos[0], e.canvasY - node.pos[1]],
+                            [e.canvasX - node.positionX, e.canvasY - node.positionY],
                             this,
                         );
                     }
@@ -959,8 +961,8 @@ export default class LGraphCanvas_Events {
                             LiteGraph.isInsideRectangle(
                                 e.canvasX,
                                 e.canvasY,
-                                node.pos[0] + node.size[0] - 15,
-                                node.pos[1] + node.size[1] - 15,
+                                node.positionX + node.size[0] - 15,
+                                node.positionY + node.size[1] - 15,
                                 15,
                                 15,
                             )
@@ -995,8 +997,8 @@ export default class LGraphCanvas_Events {
                     this.node_capturing_input.onMouseMove?.(
                         e,
                         [
-                            e.canvasX - this.node_capturing_input.pos[0],
-                            e.canvasY - this.node_capturing_input.pos[1],
+                            e.canvasX - this.node_capturing_input.positionX,
+                            e.canvasY - this.node_capturing_input.positionY,
                         ],
                         this,
                     );
@@ -1008,8 +1010,10 @@ export default class LGraphCanvas_Events {
                     //console.log("draggin!",this.selected_nodes);
                     for (const i in this.selected_nodes) {
                         let n = this.selected_nodes[i];
-                        n.pos[0] += delta[0] / this.ds.scale;
-                        n.pos[1] += delta[1] / this.ds.scale;
+                        n.pos = [
+                            n.positionX + delta[0] / this.ds.scale,
+                            n.positionY + delta[1] / this.ds.scale,
+                        ];
                     }
 
                     this.dirty_canvas = true;
@@ -1019,8 +1023,8 @@ export default class LGraphCanvas_Events {
                 if (this.resizing_node && !this.live_mode) {
                     //convert mouse to node space
                     let desired_size: Vector2 = [
-                        e.canvasX - this.resizing_node.pos[0],
-                        e.canvasY - this.resizing_node.pos[1],
+                        e.canvasX - this.resizing_node.positionX,
+                        e.canvasY - this.resizing_node.positionY,
                     ];
                     let min_size = this.resizing_node.computeSize();
                     desired_size[0] = Math.max(min_size[0], desired_size[0]);
@@ -1120,17 +1124,17 @@ export default class LGraphCanvas_Events {
 
             if (this.selected_group) {
                 let diffx =
-                    this.selected_group.pos[0] -
-                    Math.round(this.selected_group.pos[0]);
+                    this.selected_group.positionX -
+                    Math.round(this.selected_group.positionX);
                 let diffy =
-                    this.selected_group.pos[1] -
-                    Math.round(this.selected_group.pos[1]);
+                    this.selected_group.positionY -
+                    Math.round(this.selected_group.positionY);
                 this.selected_group.move(diffx, diffy, e.ctrlKey);
-                this.selected_group.pos[0] = Math.round(
-                    this.selected_group.pos[0],
+                this.selected_group.positionX = Math.round(
+                    this.selected_group.positionX,
                 );
-                this.selected_group.pos[1] = Math.round(
-                    this.selected_group.pos[1],
+                this.selected_group.positionY = Math.round(
+                    this.selected_group.positionY,
                 );
                 if ((this.selected_group as any)._nodes.length) {
                     this.dirty_canvas = true;
@@ -1325,8 +1329,8 @@ export default class LGraphCanvas_Events {
                     LiteGraph.isInsideRectangle(
                         e.canvasX,
                         e.canvasY,
-                        node.pos[0],
-                        node.pos[1] - LiteGraph.NODE_TITLE_HEIGHT,
+                        node.positionX,
+                        node.positionY - LiteGraph.NODE_TITLE_HEIGHT,
                         LiteGraph.NODE_TITLE_HEIGHT,
                         LiteGraph.NODE_TITLE_HEIGHT,
                     )
@@ -1335,8 +1339,10 @@ export default class LGraphCanvas_Events {
                 }
                 this.dirty_canvas = true;
                 this.dirty_bgcanvas = true;
-                this.node_dragged.pos[0] = Math.round(this.node_dragged.pos[0]);
-                this.node_dragged.pos[1] = Math.round(this.node_dragged.pos[1]);
+                this.node_dragged.pos = [
+                    Math.round(this.node_dragged.positionX),
+                    Math.round(this.node_dragged.positionY),
+                ];
                 if (this.graph.config.align_to_grid || this.align_to_grid) {
                     this.node_dragged.alignToGrid();
                 }
@@ -1364,8 +1370,8 @@ export default class LGraphCanvas_Events {
                     this.node_over.onMouseUp?.(
                         e,
                         [
-                            e.canvasX - this.node_over.pos[0],
-                            e.canvasY - this.node_over.pos[1],
+                            e.canvasX - this.node_over.positionX,
+                            e.canvasY - this.node_over.positionY,
                         ],
                         this,
                     );
@@ -1375,8 +1381,8 @@ export default class LGraphCanvas_Events {
                     this.node_capturing_input.onMouseUp?.(
                         e,
                         [
-                            e.canvasX - this.node_capturing_input.pos[0],
-                            e.canvasY - this.node_capturing_input.pos[1],
+                            e.canvasX - this.node_capturing_input.positionX,
+                            e.canvasY - this.node_capturing_input.positionY,
                         ],
                         this,
                     );

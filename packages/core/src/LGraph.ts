@@ -867,8 +867,10 @@ export default class LGraph {
             let y = margin + LiteGraph.NODE_TITLE_HEIGHT;
             for (let j = 0; j < column.length; ++j) {
                 const node = column[j];
-                node.pos[0] = layout == LayoutDirection.VERTICAL_LAYOUT ? y : x;
-                node.pos[1] = layout == LayoutDirection.VERTICAL_LAYOUT ? x : y;
+                node.pos = [
+                  layout == LayoutDirection.VERTICAL_LAYOUT ? y : x,
+                  layout == LayoutDirection.VERTICAL_LAYOUT ? x : y,
+                ];
                 const max_size_index =
                     layout == LayoutDirection.VERTICAL_LAYOUT ? 1 : 0;
                 if (node.size[max_size_index] > max_size) {

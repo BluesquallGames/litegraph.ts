@@ -197,7 +197,7 @@ export default class LGraphCanvas_Rendering {
 
                 //transform coords system
                 ctx.save();
-                ctx.translate(node.pos[0], node.pos[1]);
+                ctx.translate(node.positionX, node.positionY);
 
                 //Draw
                 this.drawNode(node, ctx);
@@ -495,8 +495,10 @@ export default class LGraphCanvas_Rendering {
                         this.dragging_canvas = false;
                         newnode.setProperty("name", input.name);
                         newnode.setProperty("type", input.type);
-                        this.node_dragged.pos[0] = this.graph_mouse[0] - 5;
-                        this.node_dragged.pos[1] = this.graph_mouse[1] - 5;
+                        this.node_dragged.pos = [
+                            this.graph_mouse[0] - 5,
+                            this.graph_mouse[1] - 5,
+                        ];
                         this.graph?.afterChange();
                     } else console.error("graph input node not found:", type);
                 }
@@ -568,8 +570,10 @@ export default class LGraphCanvas_Rendering {
                         this.dragging_canvas = false;
                         newnode.setProperty("name", output.name);
                         newnode.setProperty("type", output.type);
-                        this.node_dragged.pos[0] = this.graph_mouse[0] - 5;
-                        this.node_dragged.pos[1] = this.graph_mouse[1] - 5;
+                        this.node_dragged.pos = [
+                            this.graph_mouse[0] - 5,
+                            this.graph_mouse[1] - 5,
+                        ];
                         this.graph?.afterChange();
                     } else console.error("graph input node not found:", type);
                 }
@@ -1122,8 +1126,8 @@ export default class LGraphCanvas_Rendering {
                         slot_pos[0],
                         slot_pos[1],
                     ]);
-                    pos[0] -= node.pos[0];
-                    pos[1] -= node.pos[1];
+                    pos[0] -= node.positionX;
+                    pos[1] -= node.positionY;
                     if (max_y < pos[1] + LiteGraph.NODE_SLOT_HEIGHT * 0.5) {
                         max_y = pos[1] + LiteGraph.NODE_SLOT_HEIGHT * 0.5;
                     }
@@ -1209,8 +1213,8 @@ export default class LGraphCanvas_Rendering {
                     }
 
                     let pos = node.getConnectionPos(false, i, slot_pos);
-                    pos[0] -= node.pos[0];
-                    pos[1] -= node.pos[1];
+                    pos[0] -= node.positionX;
+                    pos[1] -= node.positionY;
                     if (max_y < pos[1] + LiteGraph.NODE_SLOT_HEIGHT * 0.5) {
                         max_y = pos[1] + LiteGraph.NODE_SLOT_HEIGHT * 0.5;
                     }
@@ -1775,8 +1779,8 @@ export default class LGraphCanvas_Rendering {
                 let w = LiteGraph.NODE_TITLE_HEIGHT;
                 let x = node.size[0] - w;
                 let over = LiteGraph.isInsideRectangle(
-                    this.graph_mouse[0] - node.pos[0],
-                    this.graph_mouse[1] - node.pos[1],
+                    this.graph_mouse[0] - node.positionX,
+                    this.graph_mouse[1] - node.positionY,
                     x + 2,
                     -w + 2,
                     w - 4,
@@ -2017,8 +2021,8 @@ export default class LGraphCanvas_Rendering {
                 let start_node_slotpos: Vector2 | null = null;
                 if (start_node_slot == -1) {
                     start_node_slotpos = [
-                        start_node.pos[0] + 10,
-                        start_node.pos[1] + 10,
+                        start_node.positionX + 10,
+                        start_node.positionY + 10,
                     ];
                 } else {
                     start_node_slotpos = start_node.getConnectionPos(
@@ -2455,15 +2459,15 @@ export default class LGraphCanvas_Rendering {
             let node = visible_nodes[i];
             ctx.fillStyle = "black";
             ctx.fillRect(
-                node.pos[0] - LiteGraph.NODE_TITLE_HEIGHT,
-                node.pos[1] - LiteGraph.NODE_TITLE_HEIGHT,
+                node.positionX - LiteGraph.NODE_TITLE_HEIGHT,
+                node.positionY - LiteGraph.NODE_TITLE_HEIGHT,
                 LiteGraph.NODE_TITLE_HEIGHT,
                 LiteGraph.NODE_TITLE_HEIGHT,
             );
             if (node.order == 0) {
                 ctx.strokeRect(
-                    node.pos[0] - LiteGraph.NODE_TITLE_HEIGHT + 0.5,
-                    node.pos[1] - LiteGraph.NODE_TITLE_HEIGHT + 0.5,
+                    node.positionX - LiteGraph.NODE_TITLE_HEIGHT + 0.5,
+                    node.positionY - LiteGraph.NODE_TITLE_HEIGHT + 0.5,
                     LiteGraph.NODE_TITLE_HEIGHT,
                     LiteGraph.NODE_TITLE_HEIGHT,
                 );
@@ -2471,8 +2475,8 @@ export default class LGraphCanvas_Rendering {
             ctx.fillStyle = "#FFF";
             ctx.fillText(
                 "" + node.order,
-                node.pos[0] + LiteGraph.NODE_TITLE_HEIGHT * -0.5,
-                node.pos[1] - 6,
+                node.positionX + LiteGraph.NODE_TITLE_HEIGHT * -0.5,
+                node.positionY - 6,
             );
         }
         ctx.globalAlpha = 1;

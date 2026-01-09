@@ -216,19 +216,19 @@ export default class LGraphCanvas_UI {
             const [x, y] = node.pos;
             const [width, height] = node.size;
 
-            if (top === null || y < top.pos[1]) {
+            if (top === null || y < top.positionY) {
                 top = node;
             }
-            if (right === null || x + width > right.pos[0] + right.size[0]) {
+            if (right === null || x + width > right.positionX + right.size[0]) {
                 right = node;
             }
             if (
                 bottom === null ||
-                y + height > bottom.pos[1] + bottom.size[1]
+                y + height > bottom.positionY + bottom.size[1]
             ) {
                 bottom = node;
             }
-            if (left === null || x < left.pos[0]) {
+            if (left === null || x < left.positionX) {
                 left = node;
             }
         }
@@ -291,20 +291,20 @@ export default class LGraphCanvas_UI {
         for (const [_, node] of Object.entries(canvas?.selected_nodes || {})) {
             switch (direction) {
                 case "right":
-                    node.pos[0] =
-                        boundaryNodes["right"].pos[0] +
+                    node.positionX =
+                        boundaryNodes["right"].positionX +
                         boundaryNodes["right"].size[0] -
                         node.size[0];
                     break;
                 case "left":
-                    node.pos[0] = boundaryNodes["left"].pos[0];
+                    node.positionX = boundaryNodes["left"].positionX;
                     break;
                 case "top":
-                    node.pos[1] = boundaryNodes["top"].pos[1];
+                    node.positionY = boundaryNodes["top"].positionY;
                     break;
                 case "bottom":
-                    node.pos[1] =
-                        boundaryNodes["bottom"].pos[1] +
+                    node.positionY =
+                        boundaryNodes["bottom"].positionY +
                         boundaryNodes["bottom"].size[1] -
                         node.size[1];
                     break;
@@ -2826,7 +2826,7 @@ export default class LGraphCanvas_UI {
                 node_left?.connectByTypeInput(link.origin_slot, node, fromType)
             ) {
                 node.connectByTypeInput(link.target_slot, node_right, destType);
-                node.pos[0] -= node.size[0] * 0.5;
+                node.positionX -= node.size[0] * 0.5;
             }
         };
 

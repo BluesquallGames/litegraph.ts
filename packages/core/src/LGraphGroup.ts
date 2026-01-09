@@ -38,6 +38,22 @@ export default class LGraphGroup {
         this._pos[1] = v[1];
     }
 
+    get positionX(): number {
+        return this._pos[0];
+    }
+
+    set positionX(v: number) {
+        this._pos[0] = v;
+    }
+
+    get positionY(): number {
+        return this._pos[1];
+    }
+
+    set positionY(v: number) {
+        this._pos[1] = v;
+    }
+
     public _size: Float32Array;
 
     get size(): Vector2 {
@@ -92,8 +108,7 @@ export default class LGraphGroup {
         }
         for (var i = 0; i < this._nodes.length; ++i) {
             var node = this._nodes[i];
-            node.pos[0] += deltaX;
-            node.pos[1] += deltaY;
+            node.pos = [node.positionX + deltaX, node.positionY + deltaY];
         }
     }
 
@@ -126,10 +141,10 @@ export default class LGraphGroup {
         }
 
         if (
-            this.pos[0] - 4 - margin < x &&
-            this.pos[0] + this.size[0] + 4 + margin > x &&
-            this.pos[1] - margin_top - margin < y &&
-            this.pos[1] + this.size[1] + margin > y
+            this.positionX - 4 - margin < x &&
+            this.positionX + this.size[0] + 4 + margin > x &&
+            this.positionY - margin_top - margin < y &&
+            this.positionY + this.size[1] + margin > y
         ) {
             return true;
         }

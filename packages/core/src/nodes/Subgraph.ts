@@ -330,16 +330,16 @@ export default class Subgraph extends LGraphNode {
         var over = LiteGraph.isInsideRectangle(
             pos[0],
             pos[1],
-            this.pos[0],
-            this.pos[1] + y,
+            this.positionX,
+            this.positionY + y,
             this.size[0],
             LiteGraph.NODE_TITLE_HEIGHT,
         );
         let overleft = LiteGraph.isInsideRectangle(
             pos[0],
             pos[1],
-            this.pos[0],
-            this.pos[1] + y,
+            this.positionX,
+            this.positionY + y,
             this.size[0] / 2,
             LiteGraph.NODE_TITLE_HEIGHT,
         );
@@ -642,10 +642,10 @@ export default class Subgraph extends LGraphNode {
         let max_y = 0;
 
         for (const node of Object.values(nodes)) {
-            min_x = Math.min(node.pos[0], min_x);
-            max_x = Math.max(node.pos[0] + node.size[0], max_x);
-            min_y = Math.min(node.pos[1], min_y);
-            max_y = Math.max(node.pos[1] + node.size[1], max_y);
+            min_x = Math.min(node.positionX, min_x);
+            max_x = Math.max(node.positionX + node.size[0], max_x);
+            min_y = Math.min(node.positionY, min_y);
+            max_y = Math.max(node.positionY + node.size[1], max_y);
         }
 
         const nodeIdToNewNode: Record<NodeID, LGraphNode> = {};
@@ -719,7 +719,7 @@ export default class Subgraph extends LGraphNode {
 
         // Add nodes into the subgraph
         for (const node of nodes) {
-            const newPos: Vector2 = [node.pos[0] - min_x, node.pos[1] - min_y];
+            const newPos: Vector2 = [node.positionX - min_x, node.positionY - min_y];
             const prevNodeID = node.id;
             node.graph?.remove(node, { removedBy: "moveIntoSubgraph" });
             this.subgraph.add(node, {
@@ -1015,19 +1015,19 @@ export default class Subgraph extends LGraphNode {
         let max_y = 0;
 
         for (const node of Object.values(nodes)) {
-            min_x = Math.min(node.pos[0], min_x);
-            max_x = Math.max(node.pos[0] + node.size[0], max_x);
-            min_y = Math.min(node.pos[1], min_y);
-            max_y = Math.max(node.pos[1] + node.size[1], max_y);
+            min_x = Math.min(node.positionX, min_x);
+            max_x = Math.max(node.positionX + node.size[0], max_x);
+            min_y = Math.min(node.positionY, min_y);
+            max_y = Math.max(node.positionY + node.size[1], max_y);
         }
 
         const width = max_x - min_x;
         const height = max_y - min_y;
 
         const place_x =
-            subgraphNode.pos[0] + subgraphNode.size[0] / 2 - width / 2;
+            subgraphNode.positionX + subgraphNode.size[0] / 2 - width / 2;
         const place_y =
-            subgraphNode.pos[1] + subgraphNode.size[1] / 2 - height / 2;
+            subgraphNode.positionY + subgraphNode.size[1] / 2 - height / 2;
 
         const innerLinks: Record<LinkID, [LLink, Vector2]> = {};
 
@@ -1056,8 +1056,8 @@ export default class Subgraph extends LGraphNode {
 
         for (const [index, node] of nodes.entries()) {
             const newPos: Vector2 = [
-                node.pos[0] - min_x + place_x,
-                node.pos[1] - min_y + place_y,
+                node.positionX - min_x + place_x,
+                node.positionY - min_y + place_y,
             ];
             const prevNodeID = node.id;
             node.graph?.remove(node, { removedBy: "moveOutOfSubgraph" });
@@ -1101,7 +1101,7 @@ export default class Subgraph extends LGraphNode {
                     const connPos: Vector2 = [0, 0];
                     node.getConnectionPos(false, link.target_slot, connPos);
                     prevPositions[node.id] = [
-                        [node.pos[0], node.pos[1]],
+                        [node.positionX, node.positionY],
                         connPos,
                     ];
                 }
@@ -1134,8 +1134,8 @@ export default class Subgraph extends LGraphNode {
                 const newSize = pair.innerNode.computeSize();
                 const newConnPos = pair.innerNode.getConnectionPos(true, 0);
                 const offset = [
-                    pair.innerNode.pos[0] - newConnPos[0],
-                    pair.innerNode.pos[1] - newConnPos[1],
+                    pair.innerNode.positionX - newConnPos[0],
+                    pair.innerNode.positionY - newConnPos[1],
                 ];
                 const placePos: Vector2 = [
                     connPos[0] + offset[0] - newSize[0],
@@ -1182,7 +1182,7 @@ export default class Subgraph extends LGraphNode {
                     const connPos: Vector2 = [0, 0];
                     node.getConnectionPos(true, link.origin_slot, connPos);
                     prevPositions[node.id] = [
-                        [node.pos[0], node.pos[1]],
+                        [node.positionX, node.positionY],
                         connPos,
                     ];
                 } else if (containedIds[link.target_id] == null) {
@@ -1217,8 +1217,8 @@ export default class Subgraph extends LGraphNode {
                 const [pos, connPos] = prevPositions[link.target_id];
                 const newConnPos = pair.innerNode.getConnectionPos(true, 0);
                 const offset = [
-                    pair.innerNode.pos[0] - newConnPos[0],
-                    pair.innerNode.pos[1] - newConnPos[1],
+                    pair.innerNode.positionX - newConnPos[0],
+                    pair.innerNode.positionY - newConnPos[1],
                 ];
                 const placePos: Vector2 = [
                     connPos[0] + offset[0],
