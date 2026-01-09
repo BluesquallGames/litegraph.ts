@@ -663,10 +663,6 @@ export default class LGraphNode {
         return JSON.stringify(this.serialize());
     }
 
-    translate(offset: Vector2) {
-        this._updatePosition([this._position[0] + offset[0], this._position[1] + offset[1]]);
-    }
-
     /** get the title string */
     getTitle(): string {
         return this.title || (this.constructor as any).title;
